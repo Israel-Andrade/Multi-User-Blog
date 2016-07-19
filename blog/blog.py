@@ -68,7 +68,7 @@ def render_post(response, post):
 class MainPage(BlogHandler):
     """Our Main Page to render """
     def get(self):
-        self.write('Hello, Udacity!')
+        self.render("home-page.html")
 
 
 def make_salt(length = 5):
