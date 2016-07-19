@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+	
+	{% if post %}
+		<h4>Now Deleting</h4>
+	    {{ post.render() | safe }}
+	    <br><br>
+	    {{post.delete()}}
+	{% else %}
+		<h2>Nothing to delete</h2>
+	{% endif %}
+{% endblock %}

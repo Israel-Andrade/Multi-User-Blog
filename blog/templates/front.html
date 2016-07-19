@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block content %}
+  	<div class = "row">
+   	 <div class = "col-xs-2"> 
+  		<a href ="blog/newpost"> <button class="btn btn-block btn-info">New Post</button> </a>
+     </div>
+	</div>
+  {% for p in posts %}
+    {{ p.render() | safe }}
+    <br><br>
+
+   {% if p.author == user.name %}
+  	<div class = "row">
+   	 <div class = "col-xs-2"> 
+  		<a href ="blog/delete"> <button class="btn btn-block btn-danger">Delete</button> </a>
+    </div>
+      <div class = "col-xs-2"> 
+        <a href="blog/newComment"><button type="button" class="btn btn-secondary">Comment</button></a>
+     </div>
+      <div class = "col-xs-2"> 
+        <a href="blog/showComments"><button type="button" class="btn btn-info">Show Comments</button></a>
+     </div>
+     </div>
+	</div>
+    <br><br>
+
+    <br><br>
+
+   {% else %}
+   	 <div class ="row"> 
+  	  <div class = "col-xs-2"> 
+   	 	 <button class="btn btn-block btn-primary">Like<i class = "fa fa-thumbs-up"></i></button>
+   	  </div>
+   	  <div class = "col-xs-2"> 
+  		 <button class="btn btn-block btn-danger">Dislike</button> 
+     </div>
+      <div class = "col-xs-2"> 
+        <a href="blog/newComment"><button type="button" class="btn btn-secondary">Comment</button></a>
+     </div>
+      <div class = "col-xs-2"> 
+        <a href="blog/showComments"><button type="button" class="btn btn-info">Show Comments</button></a>
+     </div>
+   	 </div>
+  {% endif %}
+
+  {% endfor %}
+{% endblock %}
