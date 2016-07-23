@@ -2,14 +2,22 @@
 
 
 {% block content %}
-	{% for c in comments %}
-		{{ c.render() | safe }}
-		   {% if c.author == user.name %}
-			   <div class = "row">
-			   	 <div class = "col-xs-2"> 
-			  		<a href ="deleteComment"> <button class="btn btn-block btn-danger">Delete</button> </a>
-			    </div>
-			   </div>
-			{% endif %}
-	{% endfor %}
+	{% if comments %}
+		{% for c in comments %}
+			{{ c.render() | safe }}
+			   {% if c.author == user.name %}
+				   <div class = "row">
+				   	 <div class = "col-xs-2"> 
+				  		<a href ="deleteComment"><button class="btn btn-block btn-danger">Delete</button> </a>
+				    </div>
+				     <div class = "col-xs-2"> 
+	         			 <a href="editcomment"><button type="button" class="btn btn-secondary">Edit Comment</button></a>
+	       			</div>
+				   </div>
+				{% endif %}
+		{% endfor %}
+	{% else %}
+		<h1> No Comments </h1>
+	{% endif %}
+
 {% endblock %}

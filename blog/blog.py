@@ -120,6 +120,16 @@ class User(db.Model):
 
 def blog_key(name = 'default'):
     return db.Key.from_path('blogs', name)
+##################################################################################
+##################################################################################
+##################################################################################
+##################################################################################
+##################################################################################
+##################################################################################
+##################################################################################
+##################################################################################
+##################################################################################
+##################################################################################
 
 class Post(db.Model):
     """Information from our post """
@@ -141,7 +151,6 @@ class Comment(db.Model):
     author = db.StringProperty()
     created = db.DateTimeProperty(auto_now_add = True)
 
-
     def render(self):
         self._render_text = self.comment.replace('\n', '<br')
         return render_str('creatComment.html', c = self)
@@ -151,7 +160,11 @@ class BlogFront(BlogHandler):
     """Posting our post in the front of the blog """
     def get(self):
         posts = greetings = Post.all().order('-created')
+        if posts == None:
+            posts = greetings = Post.all().order('-created')
+
         self.render('front.html', posts = posts)
+
 
 class AllComments(BlogHandler):
     """ Displaying all the comments from our post """
@@ -194,9 +207,7 @@ class NewPost(BlogHandler):
     #The post method will post to our blog
     def post(self):
         if not self.user:
-            self.redirect('/blog')
-
-
+            self.redirect('/login')
 
         subject = self.request.get('subject')
         content = self.request.get('content')
@@ -205,10 +216,20 @@ class NewPost(BlogHandler):
         if subject and content:
             p = Post(parent = blog_key(), subject = subject, content = content, author = author)
             p.put()
+            a = '/blog/%s' % str(p.key().id())
             self.redirect('/blog/%s' % str(p.key().id()))
         else:
             error = "subject and content, please!"
             self.render("newpost.html", subject=subject, content=content, error=error)
+
+##################################################################################
+##################################################################################
+##################################################################################
+##################################################################################
+##################################################################################
+##################################################################################
+##################################################################################
+##################################################################################
 
 
 USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
@@ -313,15 +334,26 @@ class Unit3Welcome(BlogHandler):
             self.redirect('/signup')
 
 
-class Delete(PostPage):
+##################################################################################
+##################################################################################
+##################################################################################
+##################################################################################
+##################################################################################
+##################################################################################
+##################################################################################
+
+class Delete(BlogFront):
     """This class is in charge of deleting a blog post created by the user"""
     def get(self): 
+        post = Post.all().get()
+        comments = Comment.all()
         #Grabing the instance of our blog
-        post_delete = Post.all().get()
         #Rediring the an HTML page that will be delete a blog post
         #Also passing in the HTML file to render and the instance post to be
         #used in the HTML file
-        self.render('delete-post.html', post = post_delete)
+        self.render('delete-post.html', post = post)
+        self.redirect('/blog/deleteAllComments')
+
         
 
 class AddComment(BlogHandler):
@@ -333,7 +365,7 @@ class AddComment(BlogHandler):
 
     def post(self):
         if not self.user:
-            self.redirect('/blog')
+            self.redirect('/login')
 
         comment = self.request.get('comment')
         author = self.user.name
@@ -341,12 +373,13 @@ class AddComment(BlogHandler):
         if comment:
             c = Comment(parent = blog_key(), comment = comment, author = author)
             c.put()
-            self.redirect('/blog/')
+            self.redirect('/blog')
         else:
             error = "Please add a comment"
             self.render("comment.html", author = author, comment = comment, error=error)
 
-class DeleteComment(PostPage):
+
+class DeleteComment(BlogHandler):
     """This class is in charge of deleting a blog post created by the user"""
     def get(self): 
         #Grabing the instance of our blog
@@ -355,7 +388,61 @@ class DeleteComment(PostPage):
         #Also pasing in the HTML file to render and the instance post to be
         #used in the HTML file
         self.render('delete-comment.html', comment = comment_delete)
-        
+
+class DeleteAllComments(BlogHandler):
+    def get(self):
+        comments_delete = greetings = Comment.all().order('-created')
+        self.render('delete-all-comments.html', comments = comments_delete)
+
+class EditPost(BlogHandler):
+    def get(self):
+        post_to_edit = Post.all().get()
+        self.render('edit-post.html', post = post_to_edit)
+
+    def post(self):
+        if not self.user:
+            self.redirect('/login')
+        post_to_edit = Post.all().get()
+        content = self.request.get('content')
+        subject = post_to_edit.subject
+        author = post_to_edit.author
+
+        if content:
+            post_to_edit = Post(parent = blog_key(), subject = subject, content = content, author = author)
+            Post.all().get().delete()
+            post_to_edit.put()
+            self.redirect('/blog')
+        else:
+            error = "content, please!"
+            self.render("edit-post.html", subject = subject, post = post_to_edit, author = author, error=error)
+
+class EditComment(BlogHandler):
+    def get(self):
+        comment_to_edit = Comment.all().get()
+        self.render('edit-comment.html', comment = comment_to_edit)
+    def post(self):
+        if not self.user:
+            self.redirect('/login')
+        comment_to_edit = Comment.all().get()
+        comment = self.request.get('comment')
+        author = comment_to_edit.author
+        if comment:
+            comment_to_edit = Comment(parent = blog_key(), comment = comment, author = author)
+            Comment.all().get().delete()
+            comment_to_edit.put()
+            self.redirect('/blog')
+        else:
+            error = "Comment, Please!"
+            self.render("edit-comment.html", comment = comment, author = author)
+        self.redirect('/blog')
+
+##################################################################################
+##################################################################################
+##################################################################################
+##################################################################################
+##################################################################################
+##################################################################################
+##################################################################################
 
 
 #Our directory for our website
@@ -366,10 +453,12 @@ app = webapp2.WSGIApplication([('/', MainPage),
                                ('/signup', Register),
                                ('/login', Login),
                                ('/logout', Logout),
-                               ('/unit3/welcome', Unit3Welcome),
                                ('/blog/delete', Delete),
                                ('/blog/newComment', AddComment),
                                ('/blog/showComments', AllComments),
                                ('/blog/deleteComment', DeleteComment),
+                               ('/blog/deleteAllComments', DeleteAllComments),
+                               ('/blog/editpost', EditPost),
+                               ('/blog/editcomment', EditComment),
                                ],
                               debug=True)

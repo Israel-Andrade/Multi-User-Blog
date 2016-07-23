@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 {% block content %}
 	
-	{% if post %}
+	{% if comment %}
 		<h4>Now Deleting</h4>
+	    {{ comment.render() | safe }}
 	    <br><br>
-	    {{post.delete()}}
 
+	    {{comment.delete()}}
 	{% else %}
 		<h2>Nothing to delete</h2>
-
 	{% endif %}
 {% endblock %}

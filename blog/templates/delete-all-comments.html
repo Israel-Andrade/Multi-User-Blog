@@ -1,13 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
-	
-	{% if post %}
+	{% if comment %}
 		<h4>Now Deleting</h4>
-	    <br><br>
-	    {{post.delete()}}
-
+		{%for c in comments%}
+		    <br><br>
+		    {{c.delete()}}
+		{%endfor%}
 	{% else %}
 		<h2>Nothing to delete</h2>
-
 	{% endif %}
 {% endblock %}

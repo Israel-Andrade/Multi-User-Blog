@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+	{% if comment %}
+		<h2>Comment to edit</h2>
+	<form method="post">
+		<label>
+        	<div>blog</div>
+       	 	<textarea name="comment">{{ comment.comment }}</textarea>
+    </label>
+    <div class="error">{{error}}</div>
+    <input type="submit">
+   </form>
+	{% endif %}
+
+{% endblock %}

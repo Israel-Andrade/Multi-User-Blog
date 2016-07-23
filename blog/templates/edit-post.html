@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+	{% if post %}
+		<h2>Post to edit</h2>
+	<form method="post">
+		<label>
+        	<div>blog</div>
+       	 	<textarea name="content">{{ post.content }}</textarea>
+    </label>
+    <div class="error">{{error}}</div>
+    <a href="blog"><input type="submit"></a>
+   </form>
+	{% endif %}
+
+{% endblock %}
